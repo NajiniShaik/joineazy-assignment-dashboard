@@ -32,7 +32,8 @@ export const mockAssignments = [
     description:
       'Build a responsive portfolio landing page using semantic HTML, CSS Grid, and accessible navigation.',
     dueDate: '2026-10-02',
-    driveLink: 'https://drive.google.com/drive/folders/portfolio-landing-page',
+    driveLink:
+      'https://drive.google.com/drive/u/0/search?q=Responsive%20Portfolio%20Landing%20Page',
     createdBy: 'user-001',
   },
   {
@@ -41,7 +42,8 @@ export const mockAssignments = [
     description:
       'Create a client-side registration form with reusable validation rules and clear error messages.',
     dueDate: '2026-10-09',
-    driveLink: 'https://drive.google.com/drive/folders/javascript-form-validator',
+    driveLink:
+      'https://drive.google.com/drive/u/0/search?q=JavaScript%20Form%20Validator',
     createdBy: 'user-001',
   },
   {
@@ -50,7 +52,8 @@ export const mockAssignments = [
     description:
       'Design a small set of reusable React components and document their supported props and states.',
     dueDate: '2026-10-16',
-    driveLink: 'https://drive.google.com/drive/folders/react-component-library',
+    driveLink:
+      'https://drive.google.com/drive/u/0/search?q=React%20Component%20Library',
     createdBy: 'user-001',
   },
   {
@@ -59,7 +62,8 @@ export const mockAssignments = [
     description:
       'Evaluate a dashboard interface and submit a short report with findings, evidence, and recommendations.',
     dueDate: '2026-10-23',
-    driveLink: 'https://drive.google.com/drive/folders/dashboard-usability-review',
+    driveLink:
+      'https://drive.google.com/drive/u/0/search?q=Dashboard%20Usability%20Review',
     createdBy: 'user-001',
   },
 ]

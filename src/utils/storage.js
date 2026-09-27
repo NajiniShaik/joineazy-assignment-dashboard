@@ -37,12 +37,38 @@ function writeToStorage(key, value) {
   localStorage.setItem(key, JSON.stringify(value))
 }
 
+function migratePlaceholderDriveLinks(assignments) {
+  let hasChanges = false
+
+  const migratedAssignments = assignments.map((assignment) => {
+    const titleSlug = assignment.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+    const oldPlaceholderLink = `https://drive.google.com/drive/folders/${titleSlug}`
+
+    if (assignment.driveLink !== oldPlaceholderLink) {
+      return assignment
+    }
+
+    hasChanges = true
+    const searchUrl = new URL('https://drive.google.com/drive/u/0/search')
+    searchUrl.searchParams.set('q', assignment.title)
+
+    return { ...assignment, driveLink: searchUrl.toString() }
+  })
+
+  if (hasChanges) {
+    saveAssignments(migratedAssignments)
+  }
+
+  return migratedAssignments
+}
+
 export function getUsers() {
   return readFromStorage(storageKeys.users, mockUsers)
 }
 
 export function getAssignments() {
-  return readFromStorage(storageKeys.assignments, mockAssignments)
+  const assignments = readFromStorage(storageKeys.assignments, mockAssignments)
+  return migratePlaceholderDriveLinks(assignments)
 }
 
 export function saveAssignments(assignments) {
