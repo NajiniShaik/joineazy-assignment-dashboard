@@ -34,7 +34,7 @@ function ConfirmationModal({
       role="dialog"
     >
       <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl sm:p-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.15em] text-blue-600">
+        <p className="text-sm font-semibold uppercase tracking-[0.15em] text-[#668071]">
           Submission confirmation {step} of 2
         </p>
         <h2 id={titleId} className="mt-3 text-2xl font-bold text-slate-900">
@@ -60,7 +60,7 @@ function ConfirmationModal({
           <button
             type="button"
             onClick={isFirstStep ? onNext : onConfirm}
-            className="min-h-11 rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="min-h-11 rounded-lg bg-[#27654c] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#1d523b] focus:outline-none focus:ring-2 focus:ring-[#5a9274] focus:ring-offset-2"
           >
             {isFirstStep ? 'Yes, I have submitted' : 'Confirm Submission'}
           </button>

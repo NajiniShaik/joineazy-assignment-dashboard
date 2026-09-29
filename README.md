@@ -1,40 +1,36 @@
 
-# Assignment Dashboard
+# Joineazy | Learning workspace
 
-Assignment Dashboard is a responsive React application for managing student assignments and reviewing submissions. It provides separate demo experiences for students and professors, with mock authentication, localStorage persistence, assignment creation, progress tracking, and a two-step submission confirmation flow.
+Joineazy is a responsive student, group, and assignment management frontend. It provides student and professor workspaces, course-based assignment navigation, group acknowledgement workflows, and class submission analytics. Demo data and account state persist in the browser with `localStorage`.
 
-This project was built as the Joineazy Frontend Intern assignment using React, JavaScript, Vite, and Tailwind CSS.
+This project was built as the Joineazy Frontend Intern assignment using React, React Router, JavaScript, Vite, and Tailwind CSS.
 
 ## Features
 
 ### Student
 
-- Demo login and role selection
-- Personal assignment dashboard
-- Assignment title, description, due date, and status
-- Submitted and pending assignment tracking
-- Overall completion statistics and progress bar
-- Google Drive/resource links
-- Double-confirmation submission flow
-- Submission dates after confirmation
-- Submission persistence across refreshes
-- Responsive mobile, tablet, and desktop UI
+- Demo sign-in plus validated student registration
+- Semester overview with course, assignment, completed, and pending counts
+- Course pages with assignment lists and progress
+- Assignment details with description, exact deadline, submission type, and resource link
+- Individual acknowledgement with a two-step confirmation and timestamp
+- Group creation/joining with leader/member roles
+- Group acknowledgement restricted to the leader and shared with all members
+- Clear no-group prompt and direct access to group management
 
-### Admin / Professor
+### Professor
 
-- Professor dashboard
-- Assignment creation with validation
-- Assignment-level submitted/pending counts
-- Assignment-level progress bars
-- Individual student submission status
-- Individual student progress bars
-- Google Drive/resource links
-- localStorage persistence
-- Automatic pending submission records for every student when an assignment is created
+- Course overview and course-specific assignment management
+- Assignment creation and editing with field validation
+- Search and course filtering
+- Assignment details with submission roster and analytics
+- Submitted/pending counts and progress bars
+- New assignments create pending submission records for the student roster
 
 ## Tech Stack
 
 - React.js
+- React Router
 - Vite
 - JavaScript
 - HTML
@@ -45,7 +41,7 @@ This project was built as the Joineazy Frontend Intern assignment using React, J
 
 ## Demo Login
 
-The login screen uses demo role selection rather than real authentication. Select a user card and continue to enter that user's experience.
+The sign-in screen offers the included professor/student demo profiles. Students can also create a local demo profile; neither flow provides production authentication.
 
 ### Professor / Admin
 
@@ -74,10 +70,8 @@ These users and their roles are defined in `src/data/mockData.js`.
 ### 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/NajiniShaik/joineazy-assignment-dashboard.git
 ```
-
-Replace `<repository-url>` with the GitHub repository URL.
 
 ### 2. Navigate into the project
 
@@ -121,6 +115,7 @@ src/
 │   ├── AssignmentCard.jsx
 │   ├── AssignmentForm.jsx
 │   ├── ConfirmationModal.jsx
+│   ├── CourseCard.jsx
 │   ├── Navbar.jsx
 │   ├── ProgressBar.jsx
 │   ├── StatCard.jsx
@@ -128,9 +123,9 @@ src/
 ├── data/
 │   └── mockData.js
 ├── pages/
-│   ├── AdminDashboard.jsx
 │   ├── Login.jsx
-│   └── StudentDashboard.jsx
+│   ├── ProfessorWorkspace.jsx
+│   └── StudentWorkspace.jsx
 ├── utils/
 │   └── storage.js
 ├── App.jsx
@@ -140,25 +135,26 @@ src/
 
 ## Architecture
 
-The application uses a component-based React UI. `App.jsx` performs role-based conditional rendering:
+The application uses a component-based React UI. `App.jsx` restores the current demo profile and renders its role-specific workspace:
 
-- No current user: render `Login`
-- Student user: render `StudentDashboard`
-- Admin user: render `AdminDashboard`
+- No current user: render `Login` with sign-in and student registration modes
+- Student user: render `StudentWorkspace`
+- Professor (`admin`) user: render `ProfessorWorkspace`
 
-Mock data provides the initial users, assignments, and submissions. `localStorage` acts as the persistence layer for users, assignments, submissions, and the selected demo user. Reusable components handle navigation, cards, statistics, progress bars, forms, dialogs, and student submission rows.
+Course, assignment, student, group, and submission data use small helpers in `src/utils/storage.js`. Reusable components handle navigation, course and assignment cards, statistics, progress bars, forms, dialogs, and roster rows.
 
 No backend is required for this assignment.
 
 The main data relationship is:
 
 ```text
-Assignment
-└── Student
-	└── Submission
+Course
+├── Assignment
+├── Student group
+└── Submission
 ```
 
-A submission connects an assignment and a student using `assignmentId` and `studentId`. This allows the student dashboard to show only the logged-in student's records and the admin dashboard to show each student's status independently.
+A submission connects an assignment and a student using `assignmentId` and `studentId`. Group acknowledgements update every member's submission record, while the UI exposes the action only to the group leader.
 
 ## Data Flow
 
@@ -172,33 +168,25 @@ Student
 → dashboard recalculates progress
 ```
 
-### Admin creation
+### Professor assignment management
 
-```text
-Admin
-→ creates assignment
-→ assignment is saved
-→ pending submission is created for every student
-→ admin and student dashboards update
-```
+Creating an assignment stores its course, deadline time, submission type, and resource link, then creates pending records for the roster. Editing updates the assignment while preserving acknowledgement records.
+
+### Group acknowledgement
+
+The leader confirms through the two-step dialog. The shared status and timestamp are written to each member's submission record and reflected in both workspaces.
 
 ## Design Decisions
 
 - **localStorage instead of a backend:** The assignment does not require a backend, so localStorage provides simple client-side persistence for the demo.
 - **Reusable components:** Shared UI components keep cards, dialogs, navigation, progress bars, and forms consistent.
-- **Role-based rendering in `App.jsx`:** The application has only two demo roles and does not need React Router for conditional page selection.
+- **Role-based routing:** React Router protects the `/student` and `/professor` workspaces and redirects unauthenticated or mismatched roles. Workspace sections keep local view state to avoid unnecessary nested routing in this prototype.
 - **Separate submission records:** Assignment details and student submission state are separate so each student's progress can be tracked independently.
 - **Responsive Tailwind styling:** Tailwind utilities provide consistent spacing, states, responsive layouts, and accessible focus styles without adding another styling system.
 
 ## Responsive Design
 
-The UI was tested at:
-
-- 375px mobile width
-- 768px tablet width
-- 1440px desktop width
-
-Horizontal overflow was checked at each size. The dashboards, assignment cards, student rows, and creation/submission dialogs adapt to smaller screens.
+The dashboards, navigation, cards, forms, and dialogs use responsive Tailwind layouts. The group-management screen was checked at a 360px mobile viewport with no horizontal overflow.
 
 ## Validation
 
@@ -206,28 +194,28 @@ The project has been validated with:
 
 - ESLint
 - Production build
-- Professor/admin login flow
-- Rahul, Akhil, and Sara student login flows
-- Logout and refresh persistence
-- Two-step student submission flow
-- Admin assignment creation
-- New assignment student submission records
-- Admin progress updates after student submission
-- Responsive checks at 375px, 768px, and 1440px
-- Horizontal overflow checks
+- Professor assignment creation and editing in the browser
+- Student registration with pending submission records
+- Individual acknowledgement timestamps and two-step group acknowledgement with member status propagation
+- No-group prompt and group creation
+- Role-guarded routes, role mismatch redirects, and logout
+- Mobile group-management layout without horizontal overflow
 
 ## Notes
 
-- Authentication is simulated through demo role selection and is not real authentication.
+- Authentication is simulated. Registration creates a student profile; professor access uses the included demo profile.
 - No backend or database is required by the assignment.
 - The original demo dataset can be restored with the existing `resetDemoData()` utility in `src/utils/storage.js`.
-- The clean demo dataset contains 1 admin, 3 students, 4 assignments, and 12 submission records.
+- Browser storage is local to the current browser and is not suitable for production authentication or shared multi-user data.
+- Repository: https://github.com/NajiniShaik/joineazy-assignment-dashboard (the changes in this workspace have not been pushed).
+- A deployed demo, demo video, and submission PDF still need to be created and linked.
 
 ## Future Improvements
 
 - Real authentication
 - Backend/API integration
 - Database persistence
-- Edit and delete assignments
-- Real Google Drive integration
-- More granular permissions
+- Course creation and enrollment management
+- Assignment deletion
+- Real authentication and shared API/database storage
+- Production OneDrive integration

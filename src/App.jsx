@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import AdminDashboard from './pages/AdminDashboard.jsx'
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 import Login from './pages/Login.jsx'
-import StudentDashboard from './pages/StudentDashboard.jsx'
+import ProfessorWorkspace from './pages/ProfessorWorkspace.jsx'
+import StudentDashboard from './pages/StudentWorkspace.jsx'
 import {
   clearCurrentUser,
   getCurrentLoggedInUser,
@@ -12,42 +13,41 @@ function App() {
   const [currentUser, setCurrentUser] = useState(() =>
     getCurrentLoggedInUser(),
   )
+  const navigate = useNavigate()
 
-  if (!currentUser) {
-    return <Login onLogin={setCurrentUser} />
+  function getDashboardPath(user) {
+    if (user?.role === 'student') return '/student'
+    if (user?.role === 'admin') return '/professor'
+    return '/login'
+  }
+
+  function handleLogin(user) {
+    setCurrentUser(user)
+    navigate(getDashboardPath(user), { replace: true })
   }
 
   function handleLogout() {
     clearCurrentUser()
     setCurrentUser(null)
-  }
-
-  if (currentUser.role === 'student') {
-    return <StudentDashboard student={currentUser} onLogout={handleLogout} />
-  }
-
-  if (currentUser.role === 'admin') {
-    return <AdminDashboard admin={currentUser} onLogout={handleLogout} />
+    navigate('/login', { replace: true })
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 py-16 text-slate-900">
-      <section className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm sm:p-12">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">
-          {currentUser.name}
-        </p>
-        <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
-          Dashboard unavailable
-        </h1>
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="mt-8 rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2"
-        >
-          Logout
-        </button>
-      </section>
-    </main>
+    <Routes>
+      <Route
+        path="/login"
+        element={currentUser ? <Navigate to={getDashboardPath(currentUser)} replace /> : <Login onLogin={handleLogin} />}
+      />
+      <Route
+        path="/student/*"
+        element={currentUser?.role === 'student' ? <StudentDashboard student={currentUser} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/professor/*"
+        element={currentUser?.role === 'admin' ? <ProfessorWorkspace professor={currentUser} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
+      />
+      <Route path="*" element={<Navigate to={getDashboardPath(currentUser)} replace />} />
+    </Routes>
   )
 }
 

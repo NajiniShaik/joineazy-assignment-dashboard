@@ -1,5 +1,7 @@
 import {
   mockAssignments,
+  mockCourses,
+  mockGroups,
   mockSubmissions,
   mockUsers,
 } from '../data/mockData.js'
@@ -8,6 +10,7 @@ const storageKeys = {
   users: 'assignment-dashboard-users',
   assignments: 'assignment-dashboard-assignments',
   submissions: 'assignment-dashboard-submissions',
+  groups: 'assignment-dashboard-groups',
   currentUser: 'assignment-dashboard-current-user',
 }
 
@@ -66,13 +69,99 @@ export function getUsers() {
   return readFromStorage(storageKeys.users, mockUsers)
 }
 
+export function registerStudent(name, email) {
+  const users = getUsers()
+  const normalizedEmail = email.trim().toLowerCase()
+
+  if (users.some((user) => user.email.toLowerCase() === normalizedEmail)) {
+    return null
+  }
+
+  const student = {
+    id: `user-${Date.now()}`,
+    name: name.trim(),
+    email: normalizedEmail,
+    role: 'student',
+  }
+  const submissions = getAssignments().map((assignment) => ({
+    id: `submission-${assignment.id}-${student.id}`,
+    assignmentId: assignment.id,
+    studentId: student.id,
+    submitted: false,
+    submittedAt: null,
+  }))
+
+  writeToStorage(storageKeys.users, [...users, student])
+  saveSubmissions([...getSubmissions(), ...submissions])
+  return student
+}
+
 export function getAssignments() {
   const assignments = readFromStorage(storageKeys.assignments, mockAssignments)
-  return migratePlaceholderDriveLinks(assignments)
+  return migratePlaceholderDriveLinks(assignments).map((assignment) => ({
+    dueTime: '23:59',
+    courseId: mockCourses[0].id,
+    submissionType: 'individual',
+    ...assignment,
+  }))
+}
+
+export function getCourses() {
+  return readFromStorage('assignment-dashboard-courses', mockCourses)
+}
+
+export function getGroups() {
+  return readFromStorage(storageKeys.groups, mockGroups)
+}
+
+export function saveGroups(groups) {
+  writeToStorage(storageKeys.groups, groups)
+}
+
+export function createGroup(group) {
+  const newGroup = { id: `group-${Date.now()}`, ...group }
+  const groups = [...getGroups(), newGroup]
+  saveGroups(groups)
+  return newGroup
+}
+
+export function joinGroup(groupId, studentId) {
+  const groups = getGroups()
+  const groupIndex = groups.findIndex((group) => group.id === groupId)
+
+  if (groupIndex === -1) {
+    return null
+  }
+
+  const group = groups[groupIndex]
+  if (group.memberIds.includes(studentId)) {
+    return group
+  }
+
+  const updatedGroup = { ...group, memberIds: [...group.memberIds, studentId] }
+  groups[groupIndex] = updatedGroup
+  saveGroups(groups)
+  return updatedGroup
 }
 
 export function saveAssignments(assignments) {
   writeToStorage(storageKeys.assignments, assignments)
+}
+
+export function updateAssignment(assignmentId, updates) {
+  const assignments = getAssignments()
+  const assignmentIndex = assignments.findIndex(
+    (assignment) => assignment.id === assignmentId,
+  )
+
+  if (assignmentIndex === -1) {
+    return null
+  }
+
+  const updatedAssignment = { ...assignments[assignmentIndex], ...updates }
+  assignments[assignmentIndex] = updatedAssignment
+  saveAssignments(assignments)
+  return updatedAssignment
 }
 
 export function getSubmissions() {
@@ -142,5 +231,6 @@ export function resetDemoData() {
   writeToStorage(storageKeys.users, cloneData(mockUsers))
   writeToStorage(storageKeys.assignments, cloneData(mockAssignments))
   writeToStorage(storageKeys.submissions, cloneData(mockSubmissions))
+  writeToStorage(storageKeys.groups, cloneData(mockGroups))
   clearCurrentUser()
 }

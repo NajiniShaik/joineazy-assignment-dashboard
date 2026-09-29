@@ -25,6 +25,27 @@ export const mockUsers = [
   },
 ]
 
+export const mockCourses = [
+  {
+    id: 'course-001',
+    name: 'Front-end Studio',
+    code: 'WEB 204',
+    term: 'Fall 2026',
+    professorId: 'user-001',
+    description: 'Build thoughtful, accessible web experiences from the first wireframe to the final interaction.',
+    color: 'mint',
+  },
+  {
+    id: 'course-002',
+    name: 'Interface Engineering',
+    code: 'UI 310',
+    term: 'Fall 2026',
+    professorId: 'user-001',
+    description: 'Turn component systems, interaction patterns, and product thinking into polished interfaces.',
+    color: 'coral',
+  },
+]
+
 export const mockAssignments = [
   {
     id: 'assignment-001',
@@ -32,6 +53,9 @@ export const mockAssignments = [
     description:
       'Build a responsive portfolio landing page using semantic HTML, CSS Grid, and accessible navigation.',
     dueDate: '2026-10-02',
+    dueTime: '23:59',
+    courseId: 'course-001',
+    submissionType: 'individual',
     driveLink:
       'https://drive.google.com/drive/u/0/search?q=Responsive%20Portfolio%20Landing%20Page',
     createdBy: 'user-001',
@@ -42,6 +66,9 @@ export const mockAssignments = [
     description:
       'Create a client-side registration form with reusable validation rules and clear error messages.',
     dueDate: '2026-10-09',
+    dueTime: '23:59',
+    courseId: 'course-001',
+    submissionType: 'group',
     driveLink:
       'https://drive.google.com/drive/u/0/search?q=JavaScript%20Form%20Validator',
     createdBy: 'user-001',
@@ -52,6 +79,9 @@ export const mockAssignments = [
     description:
       'Design a small set of reusable React components and document their supported props and states.',
     dueDate: '2026-10-16',
+    dueTime: '23:59',
+    courseId: 'course-002',
+    submissionType: 'individual',
     driveLink:
       'https://drive.google.com/drive/u/0/search?q=React%20Component%20Library',
     createdBy: 'user-001',
@@ -62,6 +92,9 @@ export const mockAssignments = [
     description:
       'Evaluate a dashboard interface and submit a short report with findings, evidence, and recommendations.',
     dueDate: '2026-10-23',
+    dueTime: '23:59',
+    courseId: 'course-002',
+    submissionType: 'group',
     driveLink:
       'https://drive.google.com/drive/u/0/search?q=Dashboard%20Usability%20Review',
     createdBy: 'user-001',
@@ -80,8 +113,8 @@ export const mockSubmissions = [
     id: 'submission-002',
     assignmentId: 'assignment-002',
     studentId: 'user-002',
-    submitted: true,
-    submittedAt: '2026-10-05T09:15:00.000Z',
+    submitted: false,
+    submittedAt: null,
   },
   {
     id: 'submission-003',
@@ -136,8 +169,8 @@ export const mockSubmissions = [
     id: 'submission-010',
     assignmentId: 'assignment-002',
     studentId: 'user-004',
-    submitted: true,
-    submittedAt: '2026-10-07T13:05:00.000Z',
+    submitted: false,
+    submittedAt: null,
   },
   {
     id: 'submission-011',
@@ -152,5 +185,15 @@ export const mockSubmissions = [
     studentId: 'user-004',
     submitted: false,
     submittedAt: null,
+  },
+]
+
+export const mockGroups = [
+  {
+    id: 'group-001',
+    name: 'Pixel Pioneers',
+    courseId: 'course-001',
+    leaderId: 'user-002',
+    memberIds: ['user-002', 'user-003'],
   },
 ]
